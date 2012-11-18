@@ -54,11 +54,14 @@ public class PollRecorder {
         public void record(Poll poll) {
             Jedis jedis = PollApplication.dbConnect();
             // Merges the poll title, room into a single string seperated by a hyphen
-			String pollKey = poll.room + "-" + poll.title;
+			String pollKey = "poll:" + poll.room + ":" + poll.title;
 			// Saves all relevant information about the poll as fields in a hash
 			jedis.hset(pollKey, "title", poll.title);
 			jedis.hset(pollKey, "question", poll.question);
 			jedis.hset(pollKey, "multiple", poll.isMultiple.toString());
+			Integer numAnswers = poll.answers.size();
+			String numAnswersStr = numAnswers.toString();
+			jedis.hset(pollKey, "numAnswers", numAnswersStr );
 			jedis.hset(pollKey, "room", poll.room);
 			jedis.hset(pollKey, "time", poll.time);
 			// Dynamically creates enough fields in the hash to store all of the answers and their corresponding votes.
@@ -66,11 +69,11 @@ public class PollRecorder {
 			// otherwise it fetches the previous number of votes.
 			for (int i = 1; i <= poll.answers.size(); i++)
 			{
-				jedis.hset(pollKey, "answer"+i+"text", poll.answers.toArray()[i-1].toString());
+				jedis.hset(pollKey, "answer:"+i+":text", poll.answers.toArray()[i-1].toString());
 				if (poll.votes == null){
-					jedis.hset(pollKey, "answer"+i, "0");					
+					jedis.hset(pollKey, "answer:"+i, "0");					
 				}else{
-					jedis.hset(pollKey, "answer"+i, poll.votes.toArray()[i-1].toString());
+					jedis.hset(pollKey, "answer:"+i, poll.votes.toArray()[i-1].toString());
 				}
 			}
 			Integer tv = poll.totalVotes;
@@ -99,7 +102,7 @@ public class PollRecorder {
 	    		// Extract  the index value stored at element i of answerIDs
         		Integer index = Integer.parseInt(answerIDs[i].toString()) + 1;
 	    		// Increment the votes for answer
-	    		jedis.hincrBy(pollKey, "answer"+index, 1);
+	    		jedis.hincrBy(pollKey, "answer:"+index, 1);
         	}
         	if (answerIDs.length > 0){
         		if (!webVote)
