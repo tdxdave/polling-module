@@ -119,7 +119,7 @@ public class PollInvoker {
 	   Jedis jedis = PollApplication.dbConnect();
        String roomName = Red5.getConnectionLocal().getScope().getName();
 	   ArrayList <String> pollTitleList = new ArrayList <String>(); 
-       for (String s : jedis.keys(roomName+"*"))
+       for (String s : jedis.keys("poll:"+roomName+":*"))
        {
     	   pollTitleList.add(jedis.hget(s, "title"));
        }

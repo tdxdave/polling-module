@@ -69,7 +69,7 @@ public class PollApplication {
 		Jedis jedis = dbConnect();
 		ArrayList polls = titleList();
 		for (int i = 0; i < polls.size(); i++){
-			String pollKey = name + "-" + polls.get(i).toString();
+			String pollKey = "poll:" + name + ":" + polls.get(i).toString();
 			Poll doomedPoll = getPoll(pollKey);
 			if (doomedPoll.publishToWeb){
 				cutOffWebPoll(pollKey);

@@ -207,7 +207,7 @@ package org.bigbluebutton.modules.polling.service
 	   	}  
 	  
 		public function publish(poll:PollObject):void{
-			var pollKey:String = poll.room + "-" + poll.title;
+			var pollKey:String = "poll:" + poll.room + ":" + poll.title;
 			var webKey:String = poll.webKey;
 			var serverPoll:Array = buildServerPoll(poll);
 			nc.call("poll.publish", new Responder(success, failure), serverPoll, pollKey);
@@ -247,7 +247,7 @@ package org.bigbluebutton.modules.polling.service
 		}
 		
 		public function cutOffWebPoll(poll:PollObject):void{
-			var pollKey:String = poll.room+"-"+poll.title;
+			var pollKey:String = "poll:" + poll.room+":"+poll.title;
 			nc.call("poll.cutOffWebPoll", new Responder(success, failure), pollKey);			
 			//--------------------------------------//
 			// Responder functions
@@ -341,7 +341,7 @@ package org.bigbluebutton.modules.polling.service
 				event.titleList = obj as Array;
 				// Append roomID to each item in titleList, call getPoll on that key, add the result to pollList back in ToolBarButton
 				for (var i:int = 0; i < event.titleList.length; i++){
-					var pollKey:String = roomID +"-"+ event.titleList[i];
+					var pollKey:String = "poll:" + roomID +":"+ event.titleList[i];
 					getPoll(pollKey, "initialize");
 				}
 				// This dispatch populates the titleList back in the Menu; the pollList is populated one item at a time in the for-loop
